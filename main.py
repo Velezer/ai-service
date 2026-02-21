@@ -5,10 +5,13 @@ import os
 
 app = FastAPI()
 
-MODEL_PATH = os.path.join("models", "ggml-pythia-70m-deduped-q4_0.bin")
+LLAMA_BINARY = "./llama/llama-cli"
+MODEL_PATH = "./models/ggml-pythia-70m-deduped-q4_0.bin"
+
 
 class Request(BaseModel):
     prompt: str
+
 
 @app.post("/generate/")
 def generate(request: Request):
@@ -17,10 +20,9 @@ def generate(request: Request):
     # Call llama.cpp executable
     try:
         result = subprocess.run(
-            ["./main", "-m", MODEL_PATH, "-p", prompt, "-n", "50"],  # Generate 50 tokens
+            [LLAMA_BINARY, "-m", MODEL_PATH, "-p", prompt, "-n", "50"],
             capture_output=True,
-            text=True,
-            check=True
+            text=True
         )
         output_text = result.stdout
     except subprocess.CalledProcessError as e:
