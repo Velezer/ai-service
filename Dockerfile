@@ -17,7 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Download tiny model
 RUN mkdir -p models && \
     wget -O models/ggml-pythia-70m-deduped-q4_0.bin \
-    https://huggingface.co/nomic-ai/gpt4all-j/resolve/main/ggml/ggml-pythia-70m-deduped-q4_0.bin
+    https://huggingface.co/Crataco/Pythia-Deduped-Series-GGML/blob/main/ggmlv3-pythia-70m-deduped-q5_1.bin
 
 
     
