@@ -1,35 +1,29 @@
 FROM python:3.11-slim
 
-# Install system packages
 RUN apt-get update && apt-get install -y \
-    git \
-    build-essential \
-    cmake \
-    ninja-build \
     curl \
     wget \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copy FastAPI code and requirements
+# Copy Python API
 COPY main.py .
 COPY requirements.txt .
+
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Clone and compile llama.cpp
-RUN git clone https://github.com/ggerganov/llama.cpp /app/llama.cpp
+# Download prebuilt llama.cpp binary (Linux x86_64)
+RUN mkdir -p llama && \
+    wget -O llama/llama-cli \
+    https://github.com/ggml-org/llama.cpp/releases/latest/download/llama-cli-linux-x86_64 && \
+    chmod +x llama/llama-cli
 
-RUN cd /app/llama.cpp && \
-    cmake -B build && \
-    cmake --build build --config Release
-
-# Download tiny GGUF model during build
+# Download tiny model
 RUN mkdir -p models && \
-    wget -O models/ggml-pythia-70m-deduped-q4_0.bin https://huggingface.co/nomic-ai/gpt4all-j/resolve/main/ggml/ggml-pythia-70m-deduped-q4_0.bin
+    wget -O models/ggml-pythia-70m-deduped-q4_0.bin \
+    https://huggingface.co/nomic-ai/gpt4all-j/resolve/main/ggml/ggml-pythia-70m-deduped-q4_0.bin
 
-# Expose port
 EXPOSE 8000
 
-# Use PORT from environment (Railway sets it)
 CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
