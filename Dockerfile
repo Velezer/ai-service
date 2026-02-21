@@ -19,13 +19,6 @@ RUN mkdir -p models && \
     wget -O models/ggml-pythia-70m-deduped-q4_0.bin \
     https://huggingface.co/Crataco/Pythia-Deduped-Series-GGML/blob/main/ggmlv3-pythia-70m-deduped-q5_1.bin
 
-RUN mkdir -p llama && \
-    wget -O llama.tar.gz \
-    https://github.com/ggml-org/llama.cpp/releases/download/b8121/llama-b8121-bin-ubuntu-x64.tar.gz && \
-    tar -xzf llama.tar.gz -C llama && \
-    rm llama.tar.gz && \
-    find llama -type f -name "llama-cli" -exec mv {} /app/llama-cli \; && \
-    chmod +x /app/llama-cli
     
 EXPOSE 8000
 

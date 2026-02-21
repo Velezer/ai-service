@@ -1,26 +1,24 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-import subprocess
+from llama_cpp import Llama
 
 app = FastAPI()
+
+llm = Llama(
+    model_path="./models/your-model.gguf",
+    n_ctx=512
+)
 
 class GenerateRequest(BaseModel):
     prompt: str
 
-LLAMA_BINARY = "./llama-cli"
-MODEL_PATH = "./models/ggmlv3-pythia-70m-deduped-q5_1.bi"
-
 @app.post("/generate/")
-def generate(request: GenerateRequest):
-    prompt = request.prompt
-
-    result = subprocess.run(
-        [LLAMA_BINARY, "-m", MODEL_PATH, "-p", prompt, "-n", "50"],
-        capture_output=True,
-        text=True
+def generate(req: GenerateRequest):
+    output = llm(
+        req.prompt,
+        max_tokens=64
     )
 
     return {
-        "stdout": result.stdout,
-        "stderr": result.stderr
+        "response": output["choices"][0]["text"]
     }
