@@ -5,7 +5,7 @@ from llama_cpp import Llama
 app = FastAPI()
 
 llm = Llama(
-    model_path="./models/your-model.gguf",
+    model_path="./models/https://huggingface.co/mradermacher/pythia-70m-deduped-v0-GGUF/resolve/main/pythia-70m-deduped-v0.f16.gguf",
     n_ctx=512
 )
 
