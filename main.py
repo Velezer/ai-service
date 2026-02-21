@@ -1,31 +1,26 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 import subprocess
-import os
 
 app = FastAPI()
 
-LLAMA_BINARY = "./llama-cli"
-MODEL_PATH = "./models/ggml-pythia-70m-deduped-q4_0.bin"
-
-
-class Request(BaseModel):
+class GenerateRequest(BaseModel):
     prompt: str
 
+LLAMA_BINARY = "./llama-cli"
+MODEL_PATH = "./models/ggmlv3-pythia-70m-deduped-q5_1.bi"
 
 @app.post("/generate/")
-def generate(request: Request):
+def generate(request: GenerateRequest):
     prompt = request.prompt
 
-    # Call llama.cpp executable
-    try:
-        result = subprocess.run(
-            [LLAMA_BINARY, "-m", MODEL_PATH, "-p", prompt, "-n", "50"],
-            capture_output=True,
-            text=True
-        )
-        output_text = result.stdout
-    except subprocess.CalledProcessError as e:
-        output_text = f"Error: {e.stderr}"
+    result = subprocess.run(
+        [LLAMA_BINARY, "-m", MODEL_PATH, "-p", prompt, "-n", "50"],
+        capture_output=True,
+        text=True
+    )
 
-    return {"response": output_text}
+    return {
+        "stdout": result.stdout,
+        "stderr": result.stderr
+    }
