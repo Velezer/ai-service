@@ -5,7 +5,7 @@ import os
 
 app = FastAPI()
 
-LLAMA_BINARY = "./llama/llama-cli"
+LLAMA_BINARY = "./llama-cli"
 MODEL_PATH = "./models/ggml-pythia-70m-deduped-q4_0.bin"
 
 
