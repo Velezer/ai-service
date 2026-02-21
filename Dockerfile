@@ -13,10 +13,12 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Download prebuilt llama.cpp binary (Linux x86_64)
+# Download prebuilt llama.cpp release (Linux x86_64)
 RUN mkdir -p llama && \
-    wget -O llama/llama-cli \
-    https://github.com/ggml-org/llama.cpp/releases/latest/download/llama-cli-linux-x86_64 && \
+    wget -O llama.tar.gz \
+    https://github.com/ggml-org/llama.cpp/releases/download/b8121/llama-b8121-bin-ubuntu-x64.tar.gz && \
+    tar -xzf llama.tar.gz -C llama && \
+    rm llama.tar.gz && \
     chmod +x llama/llama-cli
 
 # Download tiny model
