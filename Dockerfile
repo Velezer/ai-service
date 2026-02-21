@@ -12,7 +12,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Clone and compile llama.cpp
 RUN git clone https://github.com/ggerganov/llama.cpp /app/llama.cpp
-RUN cd /app/llama.cpp && make
+
+RUN cd /app/llama.cpp && \
+    cmake -B build && \
+    cmake --build build --config Release
 
 # Download tiny GGUF model during build
 RUN mkdir -p models && \
