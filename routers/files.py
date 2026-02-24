@@ -89,7 +89,7 @@ def file_generate(req: FileOpRequest):
         max_tokens=max_tokens,
         temperature=temperature,
         top_p=cfg["top_p"],
-        stop=["\n\n", "Explanation:", "Note:"],
+        stop=["Explanation:", "Note:"],
         echo=False,
     )
     return {"response": output["choices"][0]["text"].strip()}

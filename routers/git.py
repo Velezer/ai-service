@@ -123,7 +123,7 @@ def _generate_text(
 @router.post("/commit-message")
 def git_commit_message(req: CommitMessageRequest):
     """Generate a commit message from a git diff."""
-    response = _generate_text(_build_commit_prompt(req), stop=["\n\n", "Diff:", "---"])
+    response = _generate_text(_build_commit_prompt(req), stop=["Diff:", "---"])
     return {"response": response, "style": req.style}
 
 
@@ -144,7 +144,7 @@ def git_branch_name(req: BranchNameRequest):
 @router.post("/command")
 def git_command(req: GitCommandRequest):
     """Suggest the git command(s) for a described task."""
-    response = _generate_text(_build_git_command_prompt(req), stop=["\n\n", "Explanation:"])
+    response = _generate_text(_build_git_command_prompt(req), stop=["Explanation:"])
     return {"response": response}
 
 

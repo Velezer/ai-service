@@ -197,7 +197,7 @@ def github_label_suggestion(req: LabelSuggestionRequest):
         max_tokens=64,
         temperature=min(cfg["temperature"], 0.1),
         top_p=cfg["top_p"],
-        stop=["\n\n", "]"],
+        stop=["]"],
         echo=False,
     )
     raw = output["choices"][0]["text"].strip()
