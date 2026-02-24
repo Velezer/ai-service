@@ -33,7 +33,7 @@ RUN wget -q -O models/phi-2-q4_k_m.gguf \
 
 # rust domain — DeepSeek-Coder-1.3B Q4_K_M (~800 MB)
 RUN wget -q -O models/deepseek-coder-1.3b-instruct-q4_k_m.gguf \
-    "https://huggingface.co/bartowski/deepseek-coder-1.3b-instruct-GGUF/resolve/main/deepseek-coder-1.3b-instruct-Q4_K_M.gguf"
+    "https://huggingface.co/TheBloke/deepseek-coder-1.3b-instruct-GGUF/resolve/main/deepseek-coder-1.3b-instruct-Q4_K_M.gguf"
 
 # ── Per-domain environment defaults ──────────────────────────────────────────
 ENV FILES_MODEL_PATH=/app/models/qwen2.5-coder-0.5b-instruct-q4_k_m.gguf
