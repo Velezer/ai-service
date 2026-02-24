@@ -97,70 +97,55 @@ def _tokens(mode: str = "quality") -> tuple[int, float]:
     return cfg["max_tokens"], cfg["temperature"]
 
 
+def _generate_text(
+    prompt: str,
+    *,
+    stop: list[str] | None = None,
+    mode: str = "quality",
+    max_tokens: int | None = None,
+) -> str:
+    llm = get_model(DOMAIN)
+    cfg = get_cfg(DOMAIN)
+    token_limit, temperature = _tokens(mode)
+    output = llm(
+        prompt,
+        max_tokens=max_tokens if max_tokens is not None else token_limit,
+        temperature=temperature,
+        top_p=cfg["top_p"],
+        stop=stop,
+        echo=False,
+    )
+    return output["choices"][0]["text"].strip()
+
+
 # ── endpoints ─────────────────────────────────────────────────────────────────
 
 @router.post("/commit-message")
 def git_commit_message(req: CommitMessageRequest):
     """Generate a commit message from a git diff."""
-    llm = get_model(DOMAIN)
-    cfg = get_cfg(DOMAIN)
-    output = llm(
-        _build_commit_prompt(req),
-        max_tokens=cfg["max_tokens"],
-        temperature=cfg["temperature"],
-        top_p=cfg["top_p"],
-        stop=["\n\n", "Diff:", "---"],
-        echo=False,
-    )
-    return {"response": output["choices"][0]["text"].strip(), "style": req.style}
+    response = _generate_text(_build_commit_prompt(req), stop=["\n\n", "Diff:", "---"])
+    return {"response": response, "style": req.style}
 
 
 @router.post("/diff-summary")
 def git_diff_summary(req: DiffSummaryRequest):
     """Summarise a git diff as bullet points."""
-    llm = get_model(DOMAIN)
-    cfg = get_cfg(DOMAIN)
-    output = llm(
-        _build_diff_summary_prompt(req),
-        max_tokens=cfg["max_tokens"],
-        temperature=cfg["temperature"],
-        top_p=cfg["top_p"],
-        stop=["\n\n\n"],
-        echo=False,
-    )
-    return {"response": output["choices"][0]["text"].strip()}
+    response = _generate_text(_build_diff_summary_prompt(req), stop=["\n\n\n"])
+    return {"response": response}
 
 
 @router.post("/branch-name")
 def git_branch_name(req: BranchNameRequest):
     """Suggest a git branch name."""
-    llm = get_model(DOMAIN)
-    cfg = get_cfg(DOMAIN)
-    output = llm(
-        _build_branch_name_prompt(req),
-        max_tokens=48,
-        temperature=min(cfg["temperature"], 0.15),
-        top_p=cfg["top_p"],
-        stop=["\n", " "],
-        echo=False,
-    )
-    return {"response": output["choices"][0]["text"].strip()}
+    response = _generate_text(_build_branch_name_prompt(req), stop=["\n", " "], mode="fast", max_tokens=48)
+    return {"response": response}
 
 
 @router.post("/command")
 def git_command(req: GitCommandRequest):
     """Suggest the git command(s) for a described task."""
-    llm = get_model(DOMAIN)
-    cfg = get_cfg(DOMAIN)
-    output = llm(
-        _build_git_command_prompt(req),
-        max_tokens=cfg["max_tokens"],
-        temperature=cfg["temperature"],
-        top_p=cfg["top_p"],
-        stop=["\n\n", "Explanation:"],
-        echo=False,
-    )
-    return {"response": output["choices"][0]["text"].strip()}
+    response = _generate_text(_build_git_command_prompt(req), stop=["\n\n", "Explanation:"])
+    return {"response": response}
 
 
 @router.post("/stream/commit-message")
