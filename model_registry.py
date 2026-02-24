@@ -32,10 +32,10 @@ DOMAIN_CONFIG: dict[str, dict] = {
             "FILES_MODEL_PATH",
             "./models/qwen2.5-coder-0.5b-instruct-q4_k_m.gguf",
         ),
-        "n_ctx": int(os.getenv("FILES_N_CTX", 1024)),
+        "n_ctx": int(os.getenv("FILES_N_CTX", 128)),
         "max_tokens": int(os.getenv("FILES_MAX_TOKENS", 128)),
-        "temperature": float(os.getenv("FILES_TEMPERATURE", 0.2)),
-        "top_p": float(os.getenv("FILES_TOP_P", 0.95)),
+        "temperature": float(os.getenv("FILES_TEMPERATURE", 0.1)),
+        "top_p": float(os.getenv("FILES_TOP_P", 0.5)),
     },
     "git": {
         "model_path": os.getenv(
