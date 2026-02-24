@@ -26,7 +26,7 @@ RUN mkdir -p models
 
 # rust domain — DeepSeek-Coder-1.3B Q4_K_M (~800 MB)
 RUN wget -q -O models/deepseek-coder-1.3b-instruct-q4_k_m.gguf \
-    "https://huggingface.co/TheBloke/deepseek-coder-1.3b-instruct-GGUF/resolve/main/deepseek-coder-1.3b-instruct-Q4_K_M.gguf"
+    "https://huggingface.co/TheBloke/deepseek-coder-1.3b-instruct-GGUF/resolve/main/deepseek-coder-1.3b-instruct.Q4_K_M.gguf"
 
 # files domain — Qwen2.5-Coder-0.5B Q4_K_M (~340 MB)
 RUN wget -q -O models/qwen2.5-coder-0.5b-instruct-q4_k_m.gguf \
