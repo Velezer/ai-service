@@ -12,6 +12,12 @@ Cloud AI routers connect to external APIs (all have free tiers):
   /gemini/*   – Google Gemini    (gemini-1.5-flash)
   /groq/*     – Groq Cloud       (llama-3.1-8b-instant, ultra-fast)
   /claude/*   – Anthropic Claude (claude-3-haiku)
+  /huggingface/* – Hugging Face Inference API
+  /replicate/*   – Replicate hosted models
+
+Runtime routers for local portable inference:
+  /onnx/*     – ONNX Runtime generic inference
+  /tflite/*   – TensorFlow Lite generic inference
 
 Local GGUF routers (lazy-loaded, zero RAM when unused):
   /files/*    – basic file operations   (Qwen2.5-Coder-0.5B Q4)
@@ -23,13 +29,13 @@ Local GGUF routers (lazy-loaded, zero RAM when unused):
 from fastapi import FastAPI
 from model_registry import DOMAIN_CONFIG, _loaded
 from routers import files, git, github, rust
-from routers import openai_chat, gemini, groq_chat, claude
+from routers import openai_chat, gemini, groq_chat, claude, huggingface, replicate, onnx_runtime, tflite_runtime
 
 app = FastAPI(
     title="Multi-Domain LLM API",
     description=(
         "Local GGUF endpoints (files, git, GitHub, Rust) plus cloud AI integrations "
-        "with free tiers: OpenAI ChatGPT, Google Gemini, Groq, and Anthropic Claude."
+        "with free tiers: OpenAI ChatGPT, Google Gemini, Groq, Anthropic Claude, Hugging Face, and Replicate."
     ),
     version="2.2.0",
 )
@@ -45,6 +51,10 @@ app.include_router(openai_chat.router)
 app.include_router(gemini.router)
 app.include_router(groq_chat.router)
 app.include_router(claude.router)
+app.include_router(huggingface.router)
+app.include_router(replicate.router)
+app.include_router(onnx_runtime.router)
+app.include_router(tflite_runtime.router)
 
 
 # ── health / status ───────────────────────────────────────────────────────────

@@ -7,3 +7,9 @@ openai>=1.0.0
 google-generativeai>=0.8.0
 groq>=0.9.0
 anthropic>=0.34.0
+huggingface_hub>=0.24.0
+replicate>=0.31.0
+# ── local runtime backends ────────────────────────────────────────────────────
+onnxruntime>=1.18.0
+tflite-runtime>=2.14.0
+numpy>=1.26.0

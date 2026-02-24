@@ -151,3 +151,66 @@ docker run -p 8000:8000 ai-service
 ```
 
 Interactive docs: http://localhost:8000/docs
+
+---
+
+## Additional free inference backends
+
+### `/huggingface` — Hugging Face serverless inference
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/huggingface/ask` | Single prompt generation using Hugging Face Inference API |
+
+### `/replicate` — Replicate hosted model inference
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/replicate/ask` | Run text generation on a Replicate model |
+
+### `/onnx` — Local ONNX Runtime execution
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/onnx/infer` | Generic ONNX inference (`model_path`, named `inputs`) |
+
+### `/tflite` — Local TensorFlow Lite execution
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/tflite/infer` | Generic TFLite inference (`model_path`, named `inputs`) |
+
+---
+
+## Deploy on Kaggle
+
+1. Create a Kaggle Notebook and enable internet.
+2. In a notebook cell:
+
+```bash
+!git clone https://github.com/Velezer/ai-service.git
+%cd ai-service
+!pip install -r requirements.txt
+!cp .env.example .env
+```
+
+3. Edit `.env` with API keys and model paths.
+4. Start the API:
+
+```bash
+!uvicorn main:app --host 0.0.0.0 --port 8000
+```
+
+Use `https://<kaggle-host>/proxy/8000/docs` for Swagger docs.
+
+## Deploy on Google Colab
+
+```bash
+!git clone https://github.com/Velezer/ai-service.git
+%cd ai-service
+!pip install -r requirements.txt
+!cp .env.example .env
+!uvicorn main:app --host 0.0.0.0 --port 8000
+```
+
+For public access, run with a tunnel (example: `pyngrok`) and point it to port `8000`.
