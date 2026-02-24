@@ -21,6 +21,7 @@ load_dotenv()
 N_THREADS      = int(os.getenv("N_THREADS", 1))
 N_BATCH        = int(os.getenv("N_BATCH", 128))
 USE_MLOCK      = os.getenv("USE_MLOCK", "true").lower() in {"1", "true", "yes"}
+USE_MMAP       = os.getenv("USE_MMAP", "true").lower() in {"1", "true", "yes"}
 # When True, unload the current model before loading a different one.
 # Saves RAM at the cost of a cold-start delay on domain switches.
 EXCLUSIVE_LOADING = os.getenv("EXCLUSIVE_LOADING", "false").lower() in {"1", "true", "yes"}
@@ -97,6 +98,7 @@ def get_model(domain: str) -> Llama:
             n_batch=N_BATCH,
             use_mlock=USE_MLOCK,
             verbose=False,
+            mmap=USE_MMAP,
         )
         return _loaded[domain]  # type: ignore[return-value]
 
