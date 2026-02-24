@@ -2,4 +2,8 @@ fastapi
 uvicorn
 llama-cpp-python
 python-dotenv
+# ── cloud AI SDKs (all have free tiers) ──────────────────────────────────────
 openai>=1.0.0
+google-generativeai>=0.8.0
+groq>=0.9.0
+anthropic>=0.34.0
