@@ -18,6 +18,7 @@ Instead of one large model doing everything, each functional domain loads its ow
 
 ---
 
+
 ## Endpoints
 
 ### `/files` — Basic file operations
