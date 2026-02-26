@@ -1,0 +1,99 @@
+name: AI Code Agent
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  ai-agent:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Extract Issue Data
+        id: issue
+        run: |
+          echo "TITLE<<EOF" >> $GITHUB_OUTPUT
+          echo "${{ github.event.issue.title }}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          echo "BODY<<EOF" >> $GITHUB_OUTPUT
+          echo "${{ github.event.issue.body }}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Collect Repository Files (lightweight)
+        run: |
+          mkdir context
+          find . -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" \) \
+          -not -path "./.git/*" | head -n 10 | while read file; do
+            echo "FILE: $file" >> context/files.txt
+            echo "------------------------" >> context/files.txt
+            cat "$file" >> context/files.txt
+            echo -e "\n\n" >> context/files.txt
+          done
+
+      - name: Call Local LLM via LM Studio
+        id: llm
+        env:
+          LM_URL: ${{ secrets.LMSTUDIO_URL }}
+          LM_KEY: ${{ secrets.LMSTUDIO_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s $LM_URL/v1/chat/completions \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $LM_KEY" \
+            -d @- <<EOF
+          {
+            "model": "local-model",
+            "temperature": 0.2,
+            "messages": [
+              {
+                "role": "user",
+                "content": "You are an autonomous coding agent.\n\nTask:\n${{ steps.issue.outputs.TITLE }}\n\n${{ steps.issue.outputs.BODY }}\n\nRepository Context:\n$(cat context/files.txt)\n\nReturn STRICT JSON:\n{\n  \"MODIFIED_FILES\": {\"path\": \"new content\"},\n  \"PR_TITLE\": \"title\",\n  \"PR_BODY\": \"body\"\n}"
+              }
+            ]
+          }
+          EOF
+          )
+
+          echo "$RESPONSE" > response.json
+
+          CONTENT=$(jq -r '.choices[0].message.content' response.json)
+          echo "$CONTENT" > parsed.json
+
+      - name: Apply File Changes
+        run: |
+          BRANCH="ai-issue-${{ github.event.issue.number }}"
+          git checkout -b $BRANCH
+
+          jq -r '.MODIFIED_FILES | to_entries[] | "\(.key)"' parsed.json | while read file; do
+            mkdir -p "$(dirname "$file")"
+            jq -r --arg f "$file" '.MODIFIED_FILES[$f]' parsed.json > "$file"
+          done
+
+          git config user.name "AI Agent"
+          git config user.email "actions@github.com"
+          git add .
+          git commit -m "AI generated changes for issue #${{ github.event.issue.number }}"
+          git push origin $BRANCH
+
+      - name: Create Pull Request
+        run: |
+          PR_TITLE=$(jq -r '.PR_TITLE' parsed.json)
+          PR_BODY=$(jq -r '.PR_BODY' parsed.json)
+
+          gh pr create \
+            --title "$PR_TITLE" \
+            --body "$PR_BODY" \
+            --head "ai-issue-${{ github.event.issue.number }}" \
+            --base "${{ github.event.repository.default_branch }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
