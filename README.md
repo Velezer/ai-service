@@ -2,6 +2,7 @@
 
 FastAPI service backed by `llama-cpp-python` for local AI assistance, optimised for **1 vCPU** deployments.
 
+
 ## Architecture — separated domain models
 
 Instead of one large model doing everything, each functional domain loads its own small, specialised GGUF model **lazily on first request**.  Unused domains consume zero RAM.
