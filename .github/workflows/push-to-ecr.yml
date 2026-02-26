@@ -31,6 +31,6 @@ jobs:
       # 4. Build and push Docker image
       - name: Build and Push Docker Image
         run: |
-          IMAGE=${{ github.repository_owner }}.dkr.ecr.${{ github.event.repository.default_branch }}.amazonaws.com/my-app:latest
+          IMAGE=097357356443.dkr.ecr.${{ github.event.repository.default_branch }}.amazonaws.com/exp/ai-service:latest
           docker build -t $IMAGE .
           docker push $IMAGE
